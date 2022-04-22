@@ -1,0 +1,12 @@
+importc <stdio.h>
+importc <malloc.h>
+importc <memory>
+int a = 19 + 15;
+int b = 3;
+`s = make_unique(malloc(sizeof(int)));`
+//int k = call hello();
+//int k = call hello(1);
+//int k = call hello(1,2,3);
+//while 1 {
+//int c = 1;
+//}
