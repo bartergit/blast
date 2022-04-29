@@ -1,12 +1,37 @@
 importc <stdio.h>
 importc <malloc.h>
 importc <memory>
-int a = 19 + 15;
-int b = 3;
-`s = make_unique(malloc(sizeof(int)));`
+
+//macro hello(a)
+//    `printf("hello world, %d\n", {{a}});`
+//end
+
+macro vec_t()
+    {% for v in ["s", "b"] %}
+        struct VecT {
+            int {{v}};
+        }
+    {% endfor %}
+end
+
+struct A {
+    int a;
+    int b;
+}
+mcall vec_t()
+`A a{3,2};`
+//mcall hello(69)
+int c = a.a;
+int d = a.b;
+//`using namespace std;`
+//int a = 19 + 15;
+//int b = 3 + call hello(3,2);
+//`auto s = unique_ptr<int>(new int(3));`
 //int k = call hello();
 //int k = call hello(1);
 //int k = call hello(1,2,3);
-//while 1 {
-//int c = 1;
-//}
+int o = 1;
+while o {
+`printf("%d %d\n", c, d);`
+o = 0;
+}

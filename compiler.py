@@ -2,6 +2,7 @@ import subprocess
 import sys
 
 import yaml
+from jinja2.nativetypes import NativeEnvironment
 
 from codegen.generate import generate
 from parser.Parser import Parser
@@ -32,3 +33,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # r = NativeEnvironment(). \
+    #     from_string("{% for item in [1,2,3] %} "
+    #                 "int {{item}}  = 1; "
+    #                 "{% endfor %}") \
+    #     .render()
+    # print(r)
+

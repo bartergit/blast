@@ -21,8 +21,15 @@ def parse_number(parser: Parser) -> list:
     return ['NUMBER', number]
 
 
+def parse_field_access(parser: Parser) -> list:
+    var = parse_variable_use(parser)
+    parser.expect(".")
+    field = parse_identifier(parser)
+    return ['FIELD', {'variable': var, 'field_name': field}]
+
+
 def parse_atom(parser: Parser) -> str:
-    return safe_wrapper([parse_func_call, parse_number, parse_variable_use], parser)
+    return safe_wrapper([parse_func_call, parse_field_access, parse_number, parse_variable_use], parser)
 
 
 def parse_binary_expression(parser: Parser) -> list:

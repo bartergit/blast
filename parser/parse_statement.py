@@ -13,6 +13,14 @@ def parse_declaration(parser: Parser) -> list:
     return ['DECLARATION', {'type': btype, 'name': var_name, 'value': value}]
 
 
+def parse_assign(parser: Parser) -> list:
+    var_name = parse_identifier(parser)
+    parser.expect("=")
+    value = parse_expression(parser)
+    parser.expect(";")
+    return ['ASSIGN', {'name': var_name, 'value': value}]
+
+
 def parse_inline_c(parser: Parser) -> list:
     parser.expect("`")
     return ['INLINE', parser.until("`")]
@@ -32,4 +40,4 @@ def parse_loop(parser: Parser) -> list:
 
 
 def parse_statement(parser: Parser) -> list:
-    return safe_wrapper([parse_declaration, parse_inline_c, parse_loop], parser)
+    return safe_wrapper([parse_assign, parse_declaration, parse_inline_c, parse_loop], parser)
