@@ -6,7 +6,9 @@ import yaml
 from codegen.generate import generate
 from parser.Parser import Parser
 from parser.parse_program import parse_program
+from parser.prepocessor import apply_preprocess
 from parser.tokenizer import tokenize
+from util import dump
 
 
 def main():
@@ -14,7 +16,10 @@ def main():
     file = sys.argv[1]
     args = sys.argv[2:]
     with open(f"examples/{file}.barter") as f:
-        program = parse_program(Parser(tokenize(f.read())))
+        parser = Parser(tokenize(f.read()))
+        parser.tokens = apply_preprocess(parser)
+        print(dump(parser.tokens))
+        program = parse_program(parser)
     listing = generate(program)
     if "--ast" in args:
         print(yaml.dump(program))
@@ -45,4 +50,3 @@ if __name__ == '__main__':
     #                 "{% endfor %}") \
     #     .render()
     # print(r)
-

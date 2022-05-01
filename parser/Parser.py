@@ -24,10 +24,11 @@ class Parser:
         eq(self.tokens[self.i].string, expected)
 
     def lookahead(self, n=0) -> str:
-        return self.tokens[self.i + 1].string
+        return self.tokens[self.i + 1 + n].string
 
-    def eat(self) -> None:
-        self.i += 1
+    def eat(self, n=1) -> None:
+        assert n > 0
+        self.i += n
 
     def empty(self):
         return self.i >= len(self.tokens) - 1

@@ -69,16 +69,16 @@ def generate_function(ctx: Ctx, function: list):
             ctx.add("}")
 
 
-def generate(program: list) -> str:
+def generate(program: dict[str, list]) -> str:
     ctx = Ctx()
-    for i, statement in enumerate(program):
-        match statement:
+    for include in program['includes']:
+        match include:
             case ['IMPORTC', data]:
                 ctx.add(f"#include <{''.join(data)}>")
             case _:
                 break
-    for j, statement in enumerate(program[i:]):
-        match statement:
+    for struct in program['structs']:
+        match struct:
             case ['STRUCT', {'struct_name': struct_name, 'fields': fields}]:
                 ctx.add(f"struct {struct_name}{{")
                 for field in fields:
@@ -87,6 +87,6 @@ def generate(program: list) -> str:
                 ctx.add("};")
             case _:
                 break
-    for function in program[j + i:]:
+    for function in program['functions']:
         generate_function(ctx, function)
     return '\n'.join(ctx.listing)
