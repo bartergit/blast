@@ -1,12 +1,7 @@
+from tokenize import TokenInfo
 from typing import Callable
 
 from parser.Parser import Parser
-
-
-class AD(dict):
-    def __init__(self, *args, **kwargs):
-        super(AD, self).__init__(*args, **kwargs)
-        self.__dict__ = self
 
 
 def safe_call(function: Callable, parser: Parser):
@@ -23,3 +18,7 @@ def safe_wrapper(functions: list[Callable], parser: Parser):
         if result:
             return result
     parser.err()
+
+
+def dump(tokens: list[TokenInfo]) -> list[str]:
+    return [token.string for token in tokens]

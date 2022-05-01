@@ -18,12 +18,13 @@ def parse_program(parser: Parser) -> list[dict]:
         if not result:
             break
     expand_macros(parser)
-    print(parser.dumped())
     while True:
         result = safe_call(parse_struct_declaration, parser)
         if result is None:
             break
         program.append(result)
     while not parser.empty():
-        program.append(parse_statement(parser))
+        statement = parse_statement(parser)
+        if statement != ['EMPTY']:
+            program.append(statement)
     return program

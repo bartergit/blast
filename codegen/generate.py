@@ -1,10 +1,13 @@
 from codegen.Context import Ctx
+from parser.builtin import btype_to_ctype
 
 
 def generate_expression(ctx: Ctx, expr) -> str:
     match expr:
         case ['NUMBER', number]:
             return number
+        case ['BOOL', boolean]:
+            return boolean
         case ['VARIABLE', variable]:
             return variable
         case ['BINARY', [operator, first, second]]:
@@ -13,13 +16,17 @@ def generate_expression(ctx: Ctx, expr) -> str:
             return f"{func_name}({','.join([generate_expression(ctx, arg) for arg in args])})"
         case ['FIELD', {'variable': variable, 'field_name': field}]:
             return f"{generate_expression(ctx, variable)}.{field}"
+        case ['CAST', [first, btype]]:
+            ctype = btype_to_ctype.get(btype, btype)
+            return f"({ctype}){generate_expression(ctx, first)}"
         case _:
             raise Exception(expr)
 
 
 def generate_declaration(ctx: Ctx, dec) -> None:
     name, btype, value = dec['name'], dec['type'], generate_expression(ctx, dec['value'])
-    ctx.add(f"{btype} {name} = {value};")
+    ctype = btype_to_ctype.get(btype, btype)
+    ctx.add(f"{ctype} {name} = {value};")
 
 
 def generate_assign(ctx: Ctx, dec) -> None:
@@ -35,8 +42,8 @@ def generate_statement(ctx: Ctx, statement) -> None:
             generate_assign(ctx, data)
         case ['INLINE', data]:
             ctx.add(' '.join(data))
-        case ['WHILE', {'condition': expr, 'body': body}]:
-            ctx.add(f"while ({generate_expression(ctx, expr)}) {{")
+        case ['WHILE' | 'IF' as tag, {'condition': expr, 'body': body}]:  # if, while
+            ctx.add(f"{tag.lower()} ({generate_expression(ctx, expr)}) {{")
             for statement in body:
                 generate_statement(ctx, statement)
             ctx.add("}")

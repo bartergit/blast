@@ -39,5 +39,25 @@ def parse_loop(parser: Parser) -> list:
         body.append(result)
 
 
+def parse_if(parser: Parser) -> list:
+    parser.expect("if")
+    condition = parse_expression(parser)
+    parser.expect("{")
+    body = []
+    while True:
+        result = safe_call(parse_statement, parser)
+        if result is None:
+            parser.expect("}")
+            return ['IF', {'condition': condition, 'body': body}]
+        body.append(result)
+
+
+def parse_empy_statement(parser: Parser):
+    parser.expect(";")
+    return ['EMPTY']
+
+
 def parse_statement(parser: Parser) -> list:
-    return safe_wrapper([parse_assign, parse_declaration, parse_inline_c, parse_loop], parser)
+    return safe_wrapper(
+        [parse_assign, parse_declaration, parse_inline_c, parse_loop, parse_if, parse_empy_statement],
+        parser)

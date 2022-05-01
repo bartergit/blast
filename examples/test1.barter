@@ -2,36 +2,42 @@ importc <stdio.h>
 importc <malloc.h>
 importc <memory>
 
-//macro hello(a)
-//    `printf("hello world, %d\n", {{a}});`
-//end
 
-macro vec_t()
-    {% for v in ["s", "b"] %}
-        struct VecT {
-            int {{v}};
-        }
-    {% endfor %}
+
+macro hello(a)
+    f"{''.join([f'int {i} = 0;' for i in 'abcd'])}"
+    f"{foreach('`hello {it};`', list(range(10)))}"
+    `printf("hello world, %d\n", f"{a}");`
+    `printf("hello world, %d\n", f"{1 + 15}");`
 end
 
-struct A {
-    int a;
-    int b;
-}
-mcall vec_t()
+macro if(condition, body)
+    while f"{condition}" {
+        f"{body}"
+        `break;`
+    }
+end
+
+macro vec_t(T)
+    struct f"Vec_{T}" {
+        int ptr;
+    }
+end
+
+macro vec_declare()
+    f"{foreach('mcall vec_t({it})', ['int', 'bool', 'char'])}"
+end
+
+mcall vec_declare()
+
+
 `A a{3,2};`
-//mcall hello(69)
-int c = a.a;
-int d = a.b;
-//`using namespace std;`
-//int a = 19 + 15;
-//int b = 3 + call hello(3,2);
-//`auto s = unique_ptr<int>(new int(3));`
-//int k = call hello();
-//int k = call hello(1);
-//int k = call hello(1,2,3);
-int o = 1;
-while o {
-`printf("%d %d\n", c, d);`
-o = 0;
+mcall hello(69)
+int flag = 1;
+if flag {
+mcall if(flag, "int b = 15; int c = 19;")
 }
+bool k = true;
+bool c = true and false;
+byte k = 32 as byte;
+

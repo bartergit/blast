@@ -2,7 +2,6 @@ import subprocess
 import sys
 
 import yaml
-from jinja2.nativetypes import NativeEnvironment
 
 from codegen.generate import generate
 from parser.Parser import Parser
@@ -22,7 +21,7 @@ def main():
     if "--listing" in args:
         print(listing)
     if "run" in args:
-        with open(f"junk/{file}.cpp", "w") as f:
+        with open(f"junk/{file}.cpp", "w+") as f:
             f.write(listing)
         build = subprocess.run(f"clang junk/{file}.cpp -o junk/{file}.exe", shell=True)
         if build.returncode != 0:
@@ -32,6 +31,13 @@ def main():
 
 
 if __name__ == '__main__':
+    # t = tokenize("""
+    #  while f"{condition}" {
+    #     f"{body}"
+    #     `break;`
+    # }
+    # """)
+    # print([token.string for token in t])
     main()
     # r = NativeEnvironment(). \
     #     from_string("{% for item in [1,2,3] %} "

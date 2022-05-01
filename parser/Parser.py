@@ -44,7 +44,8 @@ class Parser:
         return [token.string for token in self.until_tokens(s)]
 
     def dumped(self) -> list[str]:
-        return [token.string for token in self.tokens[self.i + 1:]]
+        import util
+        return util.dump(self.tokens[self.i + 1:])
 
     def err(self):
         raise Exception(self.dumped())

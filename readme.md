@@ -1,4 +1,5 @@
 # todo
+- safe eval
 - struct declaration
 - implement while
 - field access operator
