@@ -3,6 +3,7 @@ from tokenize import TokenInfo
 from parser.Parser import Parser
 from parser.parse_generic import parse_identifier
 from parser.tokenizer import tokenize
+from util import foreach
 
 
 def parse_macro_declaration(parser: Parser):
@@ -22,15 +23,6 @@ def parse_macro_declaration(parser: Parser):
             parser.expect(",")
     parser.macros[macro_name] = {'args': args, 'body': parser.until_tokens("end")}
     return True
-
-
-def unsafe_interpolate_string(s: str, args: dict) -> str:
-    vars().update(args)
-    return eval(f'f"{s}"')
-
-
-def foreach(s, iterable):
-    return ''.join([eval(f'f"{s}"') for it in iterable])
 
 
 def expand_macro(parser: Parser, macro_name, args) -> list[TokenInfo]:

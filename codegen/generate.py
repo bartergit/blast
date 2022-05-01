@@ -23,7 +23,7 @@ def generate_expression(ctx: Ctx, expr) -> str:
             raise Exception(expr)
 
 
-def generate_declaration(ctx: Ctx, dec) -> None:
+def generate_variable_declaration(ctx: Ctx, dec) -> None:
     name, btype, value = dec['name'], dec['type'], generate_expression(ctx, dec['value'])
     ctype = btype_to_ctype.get(btype, btype)
     ctx.add(f"{ctype} {name} = {value};")
@@ -37,7 +37,7 @@ def generate_assign(ctx: Ctx, dec) -> None:
 def generate_statement(ctx: Ctx, statement) -> None:
     match statement:
         case ['DECLARATION', data]:
-            generate_declaration(ctx, data)
+            generate_variable_declaration(ctx, data)
         case ['ASSIGN', data]:
             generate_assign(ctx, data)
         case ['INLINE', data]:
@@ -47,11 +47,29 @@ def generate_statement(ctx: Ctx, statement) -> None:
             for statement in body:
                 generate_statement(ctx, statement)
             ctx.add("}")
+        case ['RETURN', expr]:
+            ctx.add(f"return {generate_expression(ctx, expr)};")
+        case ['EMPTY']:
+            pass
         case _:
             raise Exception(statement)
 
 
-def generate(program: list[dict]) -> str:
+def generate_function(ctx: Ctx, function: list):
+    match function:
+        case ['FUNCTION', {'func_name': func_name, 'params': params, 'return_type': ret_type, 'body': body}]:
+            generated_params = []
+            for param in params:
+                btype, name = param['type'], param['name']
+                ctype = btype_to_ctype.get(btype, btype)
+                generated_params.append(f"{ctype} {name}")
+            ctx.add(f"{ret_type} {func_name}({','.join(generated_params)}){{")
+            for statement in body:
+                generate_statement(ctx, statement)
+            ctx.add("}")
+
+
+def generate(program: list) -> str:
     ctx = Ctx()
     for i, statement in enumerate(program):
         match statement:
@@ -69,8 +87,6 @@ def generate(program: list[dict]) -> str:
                 ctx.add("};")
             case _:
                 break
-    ctx.add("int main(){")
-    for statement in program[j + i:]:
-        generate_statement(ctx, statement)
-    ctx.add("}")
+    for function in program[j + i:]:
+        generate_function(ctx, function)
     return '\n'.join(ctx.listing)

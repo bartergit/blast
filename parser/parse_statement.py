@@ -26,30 +26,27 @@ def parse_inline_c(parser: Parser) -> list:
     return ['INLINE', parser.until("`")]
 
 
-def parse_loop(parser: Parser) -> list:
-    parser.expect("while")
-    condition = parse_expression(parser)
+def parse_body(parser: Parser) -> list:
     parser.expect("{")
     body = []
     while True:
         result = safe_call(parse_statement, parser)
         if result is None:
             parser.expect("}")
-            return ['WHILE', {'condition': condition, 'body': body}]
+            return body
         body.append(result)
 
 
 def parse_if(parser: Parser) -> list:
     parser.expect("if")
     condition = parse_expression(parser)
-    parser.expect("{")
-    body = []
-    while True:
-        result = safe_call(parse_statement, parser)
-        if result is None:
-            parser.expect("}")
-            return ['IF', {'condition': condition, 'body': body}]
-        body.append(result)
+    return ['IF', {'condition': condition, 'body': parse_body(parser)}]
+
+
+def parse_loop(parser: Parser) -> list:
+    parser.expect("while")
+    condition = parse_expression(parser)
+    return ['WHILE', {'condition': condition, 'body': parse_body(parser)}]
 
 
 def parse_empy_statement(parser: Parser):
@@ -57,7 +54,13 @@ def parse_empy_statement(parser: Parser):
     return ['EMPTY']
 
 
+def parse_return(parser: Parser):
+    parser.expect("ret")
+    expr = parse_expression(parser)
+    return ['RETURN', expr]
+
+
 def parse_statement(parser: Parser) -> list:
     return safe_wrapper(
-        [parse_assign, parse_declaration, parse_inline_c, parse_loop, parse_if, parse_empy_statement],
+        [parse_return, parse_assign, parse_declaration, parse_inline_c, parse_loop, parse_if, parse_empy_statement],
         parser)

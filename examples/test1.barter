@@ -30,14 +30,20 @@ end
 
 mcall vec_declare()
 
-
-`A a{3,2};`
-mcall hello(69)
-int flag = 1;
-if flag {
-mcall if(flag, "int b = 15; int c = 19;")
+struct A{
+    int a;
+    int b;
 }
-bool k = true;
-bool c = true and false;
-byte k = 32 as byte;
 
+main() => int {
+    `A a{3,2};`
+    int flag = 1;
+    if flag {
+    mcall if(flag, "int b = 15; int c = 19;")
+    }
+    bool c = true and false;
+    byte k = 32 as byte;
+}
+sum(int x, int y) => int {
+    ret x <= y;
+}

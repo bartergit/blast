@@ -1,4 +1,5 @@
 from parser.Parser import Parser
+from parser.parse_function import parse_function
 from parser.parse_include import parse_include
 from parser.parse_macro import parse_macro_declaration, expand_macros
 from parser.parse_statement import parse_statement
@@ -24,7 +25,5 @@ def parse_program(parser: Parser) -> list[dict]:
             break
         program.append(result)
     while not parser.empty():
-        statement = parse_statement(parser)
-        if statement != ['EMPTY']:
-            program.append(statement)
+        program.append(parse_function(parser))
     return program
