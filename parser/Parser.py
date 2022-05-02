@@ -2,8 +2,9 @@ from dataclasses import dataclass, field
 from tokenize import TokenInfo
 
 
-def eq(first, second):
-    assert first == second, f"got `{first}`, expected `{second}`"
+def eq(first: TokenInfo, second):
+    assert first.string == second, f"got `{first.string}`, expected `{second}`\n" \
+                                   f"\t{first.line}"
 
 
 @dataclass
@@ -22,7 +23,7 @@ class Parser:
 
     def expect(self, expected):
         self.i += 1
-        eq(self.tokens[self.i].string, expected)
+        eq(self.tokens[self.i], expected)
 
     def lookahead(self, n=0) -> str:
         return self.tokens[self.i + 1 + n].string

@@ -11,8 +11,6 @@ macro new(struct_name, variable_name, args)
     });`
 end
 
-`using namespace std;`
-
 struct Point{
     int x;
     int y;
@@ -33,8 +31,9 @@ distance(Point p1, Point p2) => float {
 }
 
 main() => void {
-    mcall new(Point, p2, [4,6]);
-    mcall new(Point, p2, [1,2]);
+    `using namespace std;`
+    mcall new(Point, p1, [4 6]);
+    mcall new(Point, p2, [1 2]);
     float d = call distance(p1, p2);
     `printf("%.3f", d);`
 }

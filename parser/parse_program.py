@@ -7,27 +7,30 @@ from parser.prepocessor import apply_preprocess
 from util import safe_call, dump
 
 
-def parse_program(parser: Parser) -> dict[str, list]:
-    program = {'structs': [], 'includes': [], 'functions': []}
+def get_all_includes(parser: Parser) -> list:
+    includes = []
     while True:
         result = safe_call(parse_include, parser)
         if result is None:
             break
-        program['includes'].append(result)
-    while True:
-        result = safe_call(parse_macro_declaration, parser)
-        if not result:
-            break
-    print(parser.macros)
-    expand_macros(parser)
-    print(dump(parser.tokens))
-    # parser.tokens = apply_preprocess(parser)
-    # print(parser.tokens[parser.i])
+        includes.append(result)
+    return includes
+
+
+def get_all_structs(parser: Parser) -> list:
+    structs = []
     while True:
         result = safe_call(parse_struct_declaration, parser)
         if result is None:
             break
-        program['structs'].append(result)
+        structs.append(result)
+    return structs
+
+
+def parse_program(parser: Parser) -> dict[str, list]:
+    program = {'structs': [], 'includes': get_all_includes(parser), 'functions': []}
+    apply_preprocess(parser)
+    program['structs'] = get_all_structs(parser)
     while not parser.empty():
         program['functions'].append(parse_function(parser))
     return program

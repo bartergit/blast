@@ -1,16 +1,11 @@
-from tokenize import TokenInfo
-
+import parser.prepocessor as pre
 from parser.Parser import Parser
 from parser.parse_generic import parse_identifier
-from parser.prepocessor import compile_time_body, unfold
-from parser.tokenizer import tokenize
-from util import foreach
 
 
 def parse_macro_declaration(parser: Parser):
     parser.expect("macro")
     macro_name = parse_identifier(parser)
-
     parser.expect("(")
     args = []
     if parser.lookahead() == ")":
@@ -23,15 +18,14 @@ def parse_macro_declaration(parser: Parser):
                 parser.eat()
                 break
             parser.expect(",")
-    macro_parser = Parser(parser.until_tokens("end"))
-    parser.macros[macro_name] = {'args': args, 'body': compile_time_body(macro_parser)}
-    print('here')
+    parser.macros[macro_name] = {'args': args, 'body': parser.until_tokens("end")}
     return True
 
 
 def expand_macro(macro, callee_args):
     compilation_ctx = dict(zip(macro['args'], callee_args))
-    return unfold(macro['body'], compilation_ctx)
+    body = pre.compile_time_body(Parser(macro['body']))
+    return pre.unfold(body, compilation_ctx)
 
 
 def parse_arguments(parser: Parser) -> list:
