@@ -5,6 +5,7 @@ from parser.parse_generic import parse_type, parse_identifier
 def parse_struct_declaration(parser: Parser) -> list:
     parser.expect("struct")
     struct_name = parse_identifier(parser)
+    parser.structs.add(struct_name)
     parser.expect("{")
     fields = []
     while True:

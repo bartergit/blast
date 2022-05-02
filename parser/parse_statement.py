@@ -14,11 +14,11 @@ def parse_declaration(parser: Parser) -> list:
 
 
 def parse_assign(parser: Parser) -> list:
-    var_name = parse_identifier(parser)
+    assign_to = parse_expression(parser)
     parser.expect("=")
     value = parse_expression(parser)
     parser.expect(";")
-    return ['ASSIGN', {'name': var_name, 'value': value}]
+    return ['ASSIGN', {'assign_to': assign_to, 'value': value}]
 
 
 def parse_inline_c(parser: Parser) -> list:
@@ -60,7 +60,21 @@ def parse_return(parser: Parser):
     return ['RETURN', expr]
 
 
+def parse_loop_statements(parser: Parser):
+    token = parser.peek()
+    if token in ('break', 'continue'):
+        return [token.upper()]
+    assert 0, token
+
+
 def parse_statement(parser: Parser) -> list:
     return safe_wrapper(
-        [parse_return, parse_assign, parse_declaration, parse_inline_c, parse_loop, parse_if, parse_empy_statement],
+        [parse_return,
+         parse_loop_statements,
+         parse_assign,
+         parse_declaration,
+         parse_inline_c,
+         parse_loop,
+         parse_if,
+         parse_empy_statement],
         parser)

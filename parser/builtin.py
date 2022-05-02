@@ -1,3 +1,4 @@
-btypes = ['int', 'byte', 'bool']
+from codegen import Context
+
+btypes = ['int', 'byte', 'bool', 'float']
 binary_operators = ['+', '-', '*', '/', '<', '<=', '>', '>=', '==', '!=', '%', 'and', 'or']
-btype_to_ctype = {'byte': 'char'}

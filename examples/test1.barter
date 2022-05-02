@@ -1,49 +1,40 @@
 importc <stdio.h>
 importc <malloc.h>
 importc <memory>
+importc <cmath>
 
-
-
-macro hello(a)
-    f"{''.join([f'int {i} = 0;' for i in 'abcd'])}"
-    f"{foreach('`hello {it};`', list(range(10)))}"
-    `printf("hello world, %d\n", f"{a}");`
-    `printf("hello world, %d\n", f"{1 + 15}");`
+macro new(struct_name, variable_name, args)
+    `auto $(variable_name) = shared_ptr<$(struct_name)>(new $(struct_name){
+        $(for arg in args)
+            $(arg),
+        $(endfor)
+    });`
 end
 
-macro if(condition, body)
-    while f"{condition}" {
-        f"{body}"
-        `break;`
-    }
-end
+`using namespace std;`
 
-macro vec_t(T)
-    struct f"Vec_{T}" {
-        int ptr;
-    }
-end
-
-macro vec_declare()
-    f"{foreach('mcall vec_t({it})', ['int', 'bool', 'char'])}"
-end
-
-mcall vec_declare()
-
-struct A{
-    int a;
-    int b;
+struct Point{
+    int x;
+    int y;
 }
 
-main() => int {
-    `A a{3,2};`
-    int flag = 1;
-    if flag {
-    mcall if(flag, "int b = 15; int c = 19;")
-    }
-    bool c = true and false;
-    byte k = 32 as byte;
+pow_2(int x) => int {
+   ret x * x;
 }
-sum(int x, int y) => int {
-    ret x <= y;
+
+root(int x) => float {
+    `return sqrt(x);`
+}
+
+distance(Point p1, Point p2) => float {
+    int r1 = call pow_2(p1.x - p2.x);
+    int r2 = call pow_2(p1.y - p2.y);
+    ret call root(r1 + r2);
+}
+
+main() => void {
+    mcall new(Point, p2, [4,6]);
+    mcall new(Point, p2, [1,2]);
+    float d = call distance(p1, p2);
+    `printf("%.3f", d);`
 }

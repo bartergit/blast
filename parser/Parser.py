@@ -3,12 +3,13 @@ from tokenize import TokenInfo
 
 
 def eq(first, second):
-    assert first == second, (first, second)
+    assert first == second, f"got `{first}`, expected `{second}`"
 
 
 @dataclass
 class Parser:
     tokens: list[TokenInfo]
+    structs: set[str] = field(default_factory=set)
     i: int = -1
     macros: dict = field(default_factory=dict)
 

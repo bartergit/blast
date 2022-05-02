@@ -2,10 +2,9 @@ from parser.Parser import Parser
 from parser.parse_function import parse_function
 from parser.parse_include import parse_include
 from parser.parse_macro import parse_macro_declaration, expand_macros
-from parser.parse_statement import parse_statement
 from parser.parse_struct import parse_struct_declaration
 from parser.prepocessor import apply_preprocess
-from util import safe_call
+from util import safe_call, dump
 
 
 def parse_program(parser: Parser) -> dict[str, list]:
@@ -19,7 +18,11 @@ def parse_program(parser: Parser) -> dict[str, list]:
         result = safe_call(parse_macro_declaration, parser)
         if not result:
             break
-    # expand_macros(parser)
+    print(parser.macros)
+    expand_macros(parser)
+    print(dump(parser.tokens))
+    # parser.tokens = apply_preprocess(parser)
+    # print(parser.tokens[parser.i])
     while True:
         result = safe_call(parse_struct_declaration, parser)
         if result is None:

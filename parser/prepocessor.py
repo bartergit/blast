@@ -1,8 +1,8 @@
-from dataclasses import dataclass, field
 from tokenize import TokenInfo
 
 from parser.Parser import Parser
 from parser.parse_generic import parse_identifier
+from util import dump
 
 
 def compile_time_body(parser: Parser, end: str = None) -> list:
@@ -20,6 +20,7 @@ def compile_time_body(parser: Parser, end: str = None) -> list:
         if parser.lookahead(1) == end:
             parser.eat(2)
             parser.expect(")")
+            print(dump(body))
             return body
         match parser.lookahead(1):
             case "if":
@@ -50,9 +51,7 @@ def compile_time_for(parser: Parser) -> list:
     parser.expect("for")
     item_name = parse_identifier(parser)
     parser.expect("in")
-    parser.expect("[")
-    items = parser.until_tokens("]")
-    parser.expect(")")
+    items = parse_identifier(parser)
     return ['COMPFOR', {'item_name': item_name, 'items': items, 'body': compile_time_body(parser, "endfor")}]
 
 
@@ -64,12 +63,14 @@ def unfold(tokens: list, compilation_ctx: dict) -> list[TokenInfo]:
                 if condition:
                     result.extend(unfold(body, compilation_ctx))
             case ['COMPFOR', {'item_name': item_name, 'items': items, 'body': body}]:
-                for item in items:
-                    compilation_ctx[item_name] = item
+                for item in compilation_ctx[items]:
+                    compilation_ctx[item_name] = [item]
+                    # print(item_name)
+                    # print(dump(unfold(body, compilation_ctx)))
                     result.extend(unfold(body, compilation_ctx))
                 compilation_ctx.pop(item_name)
             case ['COMPEXPR', name]:
-                result.append(compilation_ctx[name])
+                result.extend(compilation_ctx[name])
             case token:
                 result.append(token)
     return result

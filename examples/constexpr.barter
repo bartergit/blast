@@ -1,0 +1,20 @@
+macro generic(ts)
+    $(for T in ts)
+        struct Vec _ $(T) {
+            $(T) ptr;
+        }
+    $(endfor)
+end
+
+macro some(items)
+    $(if true)
+        ret 0;
+    $(endif)
+    $(for item in items)
+        int $item = 1;
+    $(endfor)
+end
+
+main() => int {
+    mcall some([a b c]);
+}
