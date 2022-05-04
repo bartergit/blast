@@ -1,9 +1,9 @@
 from tokenize import TokenInfo
 
-import parser.parse_macro as macro
+import preprocessing.parse_macro as macro
 from parser.Parser import Parser
 from parser.parse_generic import parse_identifier
-from util import safe_call, dump
+from util import safe_call
 
 
 def compile_time_body(parser: Parser, end: str = None) -> list:

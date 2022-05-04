@@ -1,10 +1,9 @@
 from parser.Parser import Parser
 from parser.parse_function import parse_function
 from parser.parse_include import parse_include
-from parser.parse_macro import parse_macro_declaration, expand_macros
 from parser.parse_struct import parse_struct_declaration
-from parser.prepocessor import apply_preprocess
-from util import safe_call, dump
+from preprocessing.prepocessor import apply_preprocess
+from util import safe_call
 
 
 def get_all_includes(parser: Parser) -> list:

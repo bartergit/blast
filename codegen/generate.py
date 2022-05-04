@@ -1,4 +1,5 @@
 from codegen.Context import Ctx
+from compiler import barter_compile
 
 
 def generate_expression(ctx: Ctx, expr) -> str:
@@ -12,7 +13,7 @@ def generate_expression(ctx: Ctx, expr) -> str:
         case ['BINARY', [operator, first, second]]:
             return f"{generate_expression(ctx, first)} {operator} {generate_expression(ctx, second)}"
         case ['CALL', {'func_name': func_name, 'args': args}]:
-            return f"barter_{func_name}({','.join([generate_expression(ctx, arg) for arg in args])})"
+            return f"{func_name}({','.join([generate_expression(ctx, arg) for arg in args])})"
         case ['FIELD', {'variable': variable, 'field_name': field}]:
             return f"{generate_expression(ctx, variable)}->{field}"
         case ['CAST', [first, btype]]:
@@ -63,24 +64,33 @@ def generate_function(ctx: Ctx, function: list):
                 btype, name = param['type'], param['name']
                 ctype = ctx.btype_to_ctype(btype)
                 generated_params.append(f"{ctype} {name}")
-            ctx.add(f"{ret_type} barter_{func_name}({','.join(generated_params)}){{")
+            header = f"{ret_type} {func_name}({','.join(generated_params)})"
+            ctx.header.append(header)
+            ctx.add(header + "{")
             for statement in body:
                 generate_statement(ctx, statement)
             ctx.add("}")
 
 
-def generate(program: dict[str, list]) -> str:
+def generate(program: dict[str, list]) -> Ctx:
     ctx = Ctx()
     for include in program['includes']:
         match include:
             case ['IMPORTC', data]:
                 ctx.add(f"#include <{''.join(data)}>")
+            case ['IMPORT', data]:
+                path = data + '.barter'
+                with open(path) as f:
+                    imported_ctx = barter_compile(f.read())
+                    ctx.header.extend(imported_ctx.header)
+                    ctx.listing.extend(imported_ctx.listing)
             case _:
                 break
     for struct in program['structs']:
         match struct:
             case ['STRUCT', {'struct_name': struct_name, 'fields': fields}]:
                 ctx.structs.add(struct_name)
+                ctx.header.append(f"struct {struct_name}")
                 ctx.add(f"struct {struct_name}{{")
                 for field in fields:
                     filed_btype, field_name = field['type'], field['filed_name']
@@ -90,4 +100,4 @@ def generate(program: dict[str, list]) -> str:
                 break
     for function in program['functions']:
         generate_function(ctx, function)
-    return '\n'.join(ctx.listing) + "\nint main(){barter_main(); return 0;}"
+    return ctx

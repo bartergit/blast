@@ -1,0 +1,11 @@
+import "examples/std"
+
+struct A{
+    int x;
+}
+
+main() => int {
+    `printf("hey");`
+    call print_hello_world();
+    ret 0;
+}

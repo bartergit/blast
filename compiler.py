@@ -3,10 +3,18 @@ import sys
 
 import yaml
 
-from codegen.generate import generate
+from codegen.Context import Ctx
 from parser.Parser import Parser
 from parser.parse_program import parse_program
 from parser.tokenizer import tokenize
+
+
+def barter_compile(s: str) -> Ctx:
+    from codegen.generate import generate
+    parser = Parser(tokenize(s))
+    program = parse_program(parser)
+    ctx = generate(program)
+    return ctx
 
 
 def main():
@@ -14,12 +22,10 @@ def main():
     file = sys.argv[1]
     args = sys.argv[2:]
     with open(f"examples/{file}.barter") as f:
-        parser = Parser(tokenize(f.read()))
-        # print(dump(parser.tokens))
-        program = parse_program(parser)
-    listing = generate(program)
-    if "--ast" in args:
-        print(yaml.dump(program))
+        ctx = barter_compile(f.read())
+    listing = ctx.format_header() + "\n//\n" + ctx.format_listing()
+    # if "--ast" in args:
+    #     print(yaml.dump(program))
     if "--listing" in args:
         print(listing)
     if "run" in args:

@@ -30,7 +30,7 @@ distance(Point p1, Point p2) => float {
     ret call root(r1 + r2);
 }
 
-main() => void {
+main() => int {
     `using namespace std;`
     mcall new(Point, p1, [4 6]);
     mcall new(Point, p2, [1 2]);

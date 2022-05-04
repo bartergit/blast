@@ -10,8 +10,9 @@ def parse_importc(parser: Parser):
 
 def parse_native_import(parser: Parser):
     parser.expect("import")
-    parser.expect('"')
-    return ['IMPORT', parser.until('"')]
+    token = parser.peek()
+    assert token.startswith('"') and token.endswith('"'), token
+    return ['IMPORT', token[1:-1]]
 
 
 def parse_include(parser: Parser):

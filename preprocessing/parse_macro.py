@@ -1,4 +1,4 @@
-import parser.prepocessor as pre
+import preprocessing.prepocessor as pre
 from parser.Parser import Parser
 from parser.parse_generic import parse_identifier
 
