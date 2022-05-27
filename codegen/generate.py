@@ -52,8 +52,8 @@ def generate_statement(ctx: Ctx, statement) -> None:
             ctx.add(f"return {generate_expression(ctx, expr)};")
         case ['EMPTY']:
             pass
-        case _:
-            raise Exception(statement)
+        case other:
+            generate_expression(ctx, other)
 
 
 def generate_function(ctx: Ctx, function: list):

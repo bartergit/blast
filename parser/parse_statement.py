@@ -76,5 +76,6 @@ def parse_statement(parser: Parser) -> list:
          parse_inline_c,
          parse_loop,
          parse_if,
+         parse_expression,
          parse_empy_statement],
         parser)
